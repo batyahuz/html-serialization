@@ -8,26 +8,9 @@ var cleanHtml = new Regex("\\s{2,}").Replace(html, "");
 
 var htmlLines = new Regex("<(.*?)>").Split(cleanHtml).Where(s => s.Length > 0);
 
-HtmlElement root = new() { Name = "html" }, current = root;
+var root = BuildHtmlObjectsTree(htmlLines);
 
-foreach (var line in htmlLines)
-{
-    if (line.Equals("/html"))
-    {
-        Console.WriteLine("end of document!! :)");
-        break;
-    }
-    if (line[0] == '/')
-    {
-        current = current.Parent;
-    }
-    var firstWord = line[..line.IndexOf(' ')];
-    if (HtmlHelper.Instance.HtmlTags.Contains(firstWord))
-    {
 
-    }
-
-}
 
 //MatchCollection att;
 //foreach (var line in htmlLines)
@@ -42,8 +25,46 @@ Console.ReadLine();
 
 async Task<string> Load(string url)
 {
-    HttpClient client = new HttpClient();
+    var client = new HttpClient();
     var response = await client.GetAsync(url);
     var html = await response.Content.ReadAsStringAsync();
     return html;
+}
+
+HtmlElement BuildHtmlObjectsTree(IEnumerable<string> htmlLines)
+{
+    htmlLines = htmlLines.Where(line => !line.StartsWith("!DOCTYPE"));
+    var root = new HtmlElement();
+    var current = root;
+
+    foreach (var line in htmlLines)
+    {
+        if (line.Equals("/html"))
+            break;
+
+        var firstWord = line[..(line.IndexOf(' ') == -1 ? line.Length : line.IndexOf(' '))];
+
+        if (line[0] == '/')
+            current = current.Parent;
+        else if (HtmlHelper.Instance.HtmlTags.Contains(firstWord))
+        {
+            var element = new HtmlElement() { Name = firstWord, Parent = current };
+            current?.Children.Add(element);
+
+            var attributes = new Regex("([^\\s]*?)=\"(.*?)\"").Matches(line.Replace(firstWord, ""));
+            foreach (var attr in attributes)
+            {
+                //TODO
+                var temp = attr;
+                Console.WriteLine(temp);
+            }
+
+            if (!HtmlHelper.Instance.HtmlVoidTags.Contains(firstWord) && line[^1] != '/')
+                current = element;
+        }
+        else
+            current.InnerHtml = line;
+    }
+
+    return root;
 }
