@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HtmlSerialiser
+namespace HtmlSerialization
 {
     internal class Selector
     {
@@ -32,20 +32,24 @@ namespace HtmlSerialiser
                 var idName = query.IndexOf('#');
                 var className = query.IndexOf('.');
 
+                if (query[0] != '#' && query[0] != '.')
+                {
+                    var endString = q.IndexOf('&');
+                    current.TagName = query[0..(endString > 0 ? endString : ^0)];
+                }
+
                 if (idName >= 0)
                 {
                     var endString = q.IndexOf('&', idName + 1);
                     current.Id = query[(idName + 1)..(endString > 0 ? endString : ^0)];
                 }
-                else if (className < 0)
-                    current.TagName = query;
-                else
-                    while (className >= 0)
-                    {
-                        var endString = q.IndexOf('&', className + 1);
-                        current.Classes.Add(query[(className + 1)..(endString > 0 ? endString : ^0)]);
-                        className = query.IndexOf('.', className + 1);
-                    }
+
+                while (className >= 0)
+                {
+                    var endString = q.IndexOf('&', className + 1);
+                    current.Classes.Add(query[(className + 1)..(endString > 0 ? endString : ^0)]);
+                    className = query.IndexOf('.', className + 1);
+                }
 
                 current = new Selector() { Parent = current };
                 current.Parent.Child = current;

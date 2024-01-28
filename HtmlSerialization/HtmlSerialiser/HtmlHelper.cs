@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace HtmlSerialiser
+namespace HtmlSerialization
 {
     internal class HtmlHelper
     {
@@ -14,7 +14,7 @@ namespace HtmlSerialiser
 
         private HtmlHelper()
         {
-            var jsonTags = File.ReadAllText("Json-Files/HtmlTags.json");
+            string jsonTags = File.ReadAllText("Json-Files/HtmlTags.json");
             HtmlTags = (string[])JsonSerializer.Deserialize(jsonTags, typeof(string[]));
 
             var jsonVoidTags = File.ReadAllText("Json-Files/HtmlVoidTags.json");

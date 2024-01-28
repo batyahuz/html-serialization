@@ -1,6 +1,6 @@
 ﻿
 
-namespace HtmlSerialiser
+namespace HtmlSerialization
 {
     internal class HtmlElement
     {
@@ -8,11 +8,11 @@ namespace HtmlSerialiser
 
         public string? Name { get; set; } = null;
 
-        public List<ObjectKV> Attributes { get; set; } = new();
+        public List<string> Attributes { get; set; } = new();
 
         public List<string> Classes { get; set; } = new();
 
-        public string? InnerHtml { get; set; } = null;
+        public string? InnerHtml { get; set; } = "";
 
         public HtmlElement? Parent { get; set; }
 
@@ -24,16 +24,14 @@ namespace HtmlSerialiser
             var queue = new Queue<HtmlElement>();
             queue.Enqueue(this);
 
-            var list = new List<HtmlElement>();
             while (queue.ToArray().Length > 0)
             {
                 var first = queue.Dequeue();
-                //yield return first;
-                list.Add(first);
+                yield return first;
+
                 foreach (var child in first.Children)
                     queue.Enqueue(child);
             }
-            return list;
         }
 
         public IEnumerable<HtmlElement> Ancestors()
@@ -55,20 +53,5 @@ namespace HtmlSerialiser
             return str + $" >{InnerHtml}</{Name}>";
         }
 
-        internal class ObjectKV
-        {
-            public string Key { get; set; }
-            public string Value { get; set; }
-
-            public ObjectKV(params string[] attributeKV)
-            {
-                Key = attributeKV[0];
-                Value = attributeKV[1];
-            }
-            public override string ToString()
-            {
-                return $"{Key}=\"{Value}\"";
-            }
-        }
     }
 }
