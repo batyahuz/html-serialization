@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HtmlSerialiser
+namespace HtmlSerialization
 {
     internal class Selector
     {
@@ -18,7 +18,7 @@ namespace HtmlSerialiser
 
         public Selector? Child { get; set; }
 
-        public static Selector ConvertToSelector(string queryString)
+        public static Selector FromString(string queryString)
         {
             var queries = queryString.Split(' ');
 
@@ -47,6 +47,7 @@ namespace HtmlSerialiser
                 current = new Selector() { Parent = current };
                 current.Parent.Child = current;
             }
+            current.Parent.Child = null;
 
             return root;
         }
