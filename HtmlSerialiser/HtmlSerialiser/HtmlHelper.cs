@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace HtmlSerialization
+namespace HtmlSerialiser
 {
     internal class HtmlHelper
     {

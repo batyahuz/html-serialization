@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HtmlSerialization
+namespace HtmlSerialiser
 {
     internal class Selector
     {
-        public string? Id { get; set; }
+        public string? Id { get; set; } = null;
 
-        public string? TagName { get; set; }
+        public string? TagName { get; set; } = null;
 
         public List<string> Classes { get; set; } = new();
 
@@ -26,23 +27,25 @@ namespace HtmlSerialization
             var current = root;
             foreach (var query in queries)
             {
-                var subQueries = query.Split('#', '.');
-                int sd = 0, sl = 0;
-                foreach (var subQuery in subQueries)
+                var q = query.Replace('.', '&').Replace('#', '&');
+
+                var idName = query.IndexOf('#');
+                var className = query.IndexOf('.');
+
+                if (idName >= 0)
                 {
-                    var dot = query.IndexOf('.', sd);
-                    var ladder = query.IndexOf('#', sl);
-
-                    if (dot > ladder && dot > 0)
-                        current.Id = subQuery;
-                    else if (ladder > 0)
-                        current.Classes.Add(subQuery);
-                    else
-                        current.TagName = subQuery;
-
-                    sd = dot > 0 ? dot : query.Length - 1;
-                    sl = ladder > 0 ? ladder : query.Length - 1;
+                    var endString = q.IndexOf('&', idName + 1);
+                    current.Id = query[(idName + 1)..(endString > 0 ? endString : ^0)];
                 }
+                else if (className < 0)
+                    current.TagName = query;
+                else
+                    while (className >= 0)
+                    {
+                        var endString = q.IndexOf('&', className + 1);
+                        current.Classes.Add(query[(className + 1)..(endString > 0 ? endString : ^0)]);
+                        className = query.IndexOf('.', className + 1);
+                    }
 
                 current = new Selector() { Parent = current };
                 current.Parent.Child = current;
