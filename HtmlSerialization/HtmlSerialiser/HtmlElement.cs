@@ -36,21 +36,18 @@ namespace HtmlSerialization
 
         public IEnumerable<HtmlElement> Ancestors()
         {
-            var current = this;
-            while (current != null)
-            {
-                yield return current;
-                current = current.Parent;
-            }
+            for (var curr = this; curr != null; curr = curr.Parent)
+                yield return curr;
         }
 
         public override string ToString()
         {
             var str = $"<{Name} id=\"{Id}\" class=\"";
             Classes.ForEach(c => str += c + " ");
+            str = str[..^1];
             str += "\" ";
             Attributes.ForEach(a => str += a + " ");
-            return str + $" >{InnerHtml}</{Name}>";
+            return str + $">{InnerHtml}</{Name}>";
         }
 
     }

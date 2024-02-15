@@ -14,11 +14,8 @@ namespace HtmlSerialization
 
         private HtmlHelper()
         {
-            string jsonTags = File.ReadAllText("Json-Files/HtmlTags.json");
-            HtmlTags = (string[])JsonSerializer.Deserialize(jsonTags, typeof(string[]));
-
-            var jsonVoidTags = File.ReadAllText("Json-Files/HtmlVoidTags.json");
-            HtmlVoidTags = (string[])JsonSerializer.Deserialize(jsonVoidTags, typeof(string[]));
+            HtmlTags = (string[])JsonSerializer.Deserialize(File.ReadAllText("Json-Files/HtmlTags.json"), typeof(string[]));
+            HtmlVoidTags = (string[])JsonSerializer.Deserialize(File.ReadAllText("Json-Files/HtmlVoidTags.json"), typeof(string[]));
         }
     }
 }
